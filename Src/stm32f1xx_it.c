@@ -37,7 +37,6 @@
 
 /* USER CODE BEGIN 0 */
 #include "generator.h"
-#include "test1.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -58,7 +57,6 @@ void SysTick_Handler(void)
   /* USER CODE BEGIN SysTick_IRQn 0 */
   HAL_IncTick();
   GEN_SYSTICK_IRQHandler();
-  TEST1_SYSTICK_IRQHandler();
 #if 0
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
