@@ -25,7 +25,6 @@ static uint8_t DMA_array[GEN_AXIS_CNT][GEN_DMA_ARRAY_SIZE] = {{0}};
 static volatile uint8_t output_type[GEN_AXIS_CNT] = {0}; // output enabled flag
 static volatile uint16_t steps_last[GEN_AXIS_CNT] = {0}; // last output steps count
 static volatile int32_t pos_last[GEN_AXIS_CNT] = {0}; // axis last position
-static volatile uint32_t HCLK_freq = 0; // system core frequency
 
 // links to the timers and DMA channels init structures
 extern TIM_HandleTypeDef htim1;
@@ -42,6 +41,7 @@ struct AXIS_t
 {
   TIM_HandleTypeDef*  htim;       // link to timer's init structure
   DMA_HandleTypeDef*  hdma;       // link to timer's dma channel init structure
+  uint32_t            tim_freq;   // axis timer base frequency, Hz
 
   int32_t             pos;        // actual position, steps
   uint32_t            freq;       // actual frequency, Hz
@@ -53,13 +53,13 @@ struct AXIS_t
 };
 // axis data array
 static struct AXIS_t axes[] = {
-  {&htim1,  &hdma_tim1_ch1,      0, 0, 0, 10, 10, 1000000, 1000000},
+  {&htim1,  &hdma_tim1_ch1,      72000000, 0, 0, 0, 10, 10, 1000000, 1000000},
 #if GEN_AXIS_CNT >= 2
-  {&htim2,  &hdma_tim2_ch1,      0, 0, 0, 10, 10, 1000000, 1000000},
+  {&htim2,  &hdma_tim2_ch1,      72000000, 0, 0, 0, 10, 10, 1000000, 1000000},
 #if GEN_AXIS_CNT >= 3
-  {&htim3,  &hdma_tim3_ch1_trig, 0, 0, 0, 10, 10, 1000000, 1000000},
+  {&htim3,  &hdma_tim3_ch1_trig, 72000000, 0, 0, 0, 10, 10, 1000000, 1000000},
 #if GEN_AXIS_CNT >= 4
-  {&htim4,  &hdma_tim4_ch1,      0, 0, 0, 10, 10, 1000000, 1000000}
+  {&htim4,  &hdma_tim4_ch1,      72000000, 0, 0, 0, 10, 10, 1000000, 1000000}
 #endif
 #endif
 #endif
@@ -88,9 +88,6 @@ void GEN_system_init(void)
  */
 void GEN_init(void)
 {
-  // get and save real core frequency
-  HCLK_freq = HAL_RCC_GetHCLKFreq();
-
   for ( uint8_t axis = GEN_AXIS_CNT; axis--; )
   {
     // fill the array with timer's CR1 values with timer enable bit
@@ -128,8 +125,8 @@ void GEN_steps_output_const(uint8_t axis, uint16_t steps, uint32_t freq)
   axes[axis].freq = freq; // set axis output frequency
 
   // calculate the period and prescaler
-  prescaler = HCLK_freq / freq / 65536;
-  period = HCLK_freq / freq / (prescaler + 1);
+  prescaler = axes[axis].tim_freq / freq / 65536;
+  period = axes[axis].tim_freq / freq / (prescaler + 1);
 
   // set timer's data
   __HAL_TIM_SET_AUTORELOAD(axes[axis].htim, period - 1);
