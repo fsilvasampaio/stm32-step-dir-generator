@@ -185,7 +185,7 @@ void GEN_SYSTICK_IRQHandler(void)
     if ( axes[axis].hdma->Instance->CNDTR )
     {
       // TODO - calculate axis pos using DIR state
-      axes[axis].pos += steps_last[axis] - axes[axis].hdma->Instance->CNDTR;
+      axes[axis].pos = pos_last[axis] + (steps_last[axis] - axes[axis].hdma->Instance->CNDTR);
     }
 
     // TODO - frequency recalculation for the accelerated output
