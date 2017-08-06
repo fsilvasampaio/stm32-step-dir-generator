@@ -55,8 +55,14 @@ extern DMA_HandleTypeDef hdma_tim4_ch1;
 void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
+  // function SysTick_Handler() run every GEN_SYSTICK_IRQ_FREQ Hz
+
+  // HAL's private var uwTick++
   HAL_IncTick();
+
+  // use own handler for the systick update event
   GEN_SYSTICK_IRQHandler();
+
 #if 0
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
@@ -82,13 +88,16 @@ void DMA1_Channel1_IRQHandler(void)
   /* Clear the transfer complete flag */
   __HAL_DMA_CLEAR_FLAG(&hdma_tim4_ch1, DMA_FLAG_TC1);
 
+  // use own handler for the DMA channel transfer complete event
   GEN_DMA_transfer_complete(3);
+
 #if 0
   /* USER CODE END DMA1_Channel1_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_tim4_ch1);
   /* USER CODE BEGIN DMA1_Channel1_IRQn 1 */
 #endif
 
+  // to prevent compiler's warnings about unused var
   UNUSED(hdma_tim4_ch1);
   /* USER CODE END DMA1_Channel1_IRQn 1 */
 }
@@ -102,13 +111,16 @@ void DMA1_Channel2_IRQHandler(void)
   /* Clear the transfer complete flag */
   __HAL_DMA_CLEAR_FLAG(&hdma_tim1_ch1, DMA_FLAG_TC2);
 
+  // use own handler for the DMA channel transfer complete event
   GEN_DMA_transfer_complete(0);
+
 #if 0
   /* USER CODE END DMA1_Channel2_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_tim1_ch1);
   /* USER CODE BEGIN DMA1_Channel2_IRQn 1 */
 #endif
 
+  // to prevent compiler's warnings about unused var
   UNUSED(hdma_tim1_ch1);
   /* USER CODE END DMA1_Channel2_IRQn 1 */
 }
@@ -122,13 +134,16 @@ void DMA1_Channel5_IRQHandler(void)
   /* Clear the transfer complete flag */
   __HAL_DMA_CLEAR_FLAG(&hdma_tim2_ch1, DMA_FLAG_TC5);
 
+  // use own handler for the DMA channel transfer complete event
   GEN_DMA_transfer_complete(1);
+
 #if 0
   /* USER CODE END DMA1_Channel5_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_tim2_ch1);
   /* USER CODE BEGIN DMA1_Channel5_IRQn 1 */
 #endif
 
+  // to prevent compiler's warnings about unused var
   UNUSED(hdma_tim2_ch1);
   /* USER CODE END DMA1_Channel5_IRQn 1 */
 }
@@ -142,13 +157,16 @@ void DMA1_Channel6_IRQHandler(void)
   /* Clear the transfer complete flag */
   __HAL_DMA_CLEAR_FLAG(&hdma_tim3_ch1_trig, DMA_FLAG_TC6);
 
+  // use own handler for the DMA channel transfer complete event
   GEN_DMA_transfer_complete(2);
+
 #if 0
   /* USER CODE END DMA1_Channel6_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_tim3_ch1_trig);
   /* USER CODE BEGIN DMA1_Channel6_IRQn 1 */
 #endif
 
+  // to prevent compiler's warnings about unused var
   UNUSED(hdma_tim3_ch1_trig);
   /* USER CODE END DMA1_Channel6_IRQn 1 */
 }

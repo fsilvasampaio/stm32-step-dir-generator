@@ -38,10 +38,9 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f1xx_hal.h"
-#include "generator.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "generator.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -101,6 +100,7 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
+  // init generation core data
   GEN_system_init();
   /* USER CODE END SysInit */
 
@@ -116,6 +116,7 @@ int main(void)
   MX_NVIC_Init();
 
   /* USER CODE BEGIN 2 */
+  // init generation data
   GEN_init();
   /* USER CODE END 2 */
 
