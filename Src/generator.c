@@ -23,7 +23,8 @@
 static uint8_t DMA_array[GEN_AXIS_CNT][GEN_DMA_ARRAY_SIZE] = {{0}};
 
 static volatile uint8_t output_type[GEN_AXIS_CNT] = {0}; // output enabled flag
-static volatile uint16_t steps_last[GEN_AXIS_CNT] = {0}; // current output steps count
+static volatile uint16_t steps_last[GEN_AXIS_CNT] = {0}; // last output steps count
+static volatile int32_t pos_last[GEN_AXIS_CNT] = {0}; // axis last position
 static volatile uint32_t HCLK_freq = 0; // system core frequency
 
 // links to the timers and DMA channels init structures
@@ -120,9 +121,11 @@ void GEN_steps_output_const(uint8_t axis, uint16_t steps, uint32_t freq)
   // do nothing if output is already ON
   if ( output_type[axis] ) return;
 
-  // set output params
-  output_type[axis] = GEN_STEPS_OUTPUT_CONST;
-  steps_last[axis] = steps;
+  // set the params
+  output_type[axis] = GEN_STEPS_OUTPUT_CONST; // set output type
+  steps_last[axis] = steps; // save last generation steps value
+  pos_last[axis] = axes[axis].pos; // save axis position before generation
+  axes[axis].freq = freq; // set axis output frequency
 
   // calculate the period and prescaler
   prescaler = HCLK_freq / freq / 65536;
@@ -167,13 +170,26 @@ void GEN_steps_output_const(uint8_t axis, uint16_t steps, uint32_t freq)
 /* Handlers ------------------------------------------------------------------*/
 
 /*
- * systick update handler
+ * systick update event handler
  *
  * uses in the SysTick_Handler()
  */
 void GEN_SYSTICK_IRQHandler(void)
 {
-  // TODO - frequency recalculation for the accelerated output
+  static uint8_t axis = 0;
+
+  // do it for all axes
+  for ( axis = GEN_AXIS_CNT; axis--; )
+  {
+    // update the position if needed
+    if ( axes[axis].hdma->Instance->CNDTR )
+    {
+      // TODO - calculate axis pos using DIR state
+      axes[axis].pos += steps_last[axis] - axes[axis].hdma->Instance->CNDTR;
+    }
+
+    // TODO - frequency recalculation for the accelerated output
+  }
 }
 
 /*
@@ -193,6 +209,9 @@ void GEN_DMA_transfer_complete(uint8_t axis)
   // set the CR1 timer enable bit in the DMA array cell
   DMA_array[axis][steps_last[axis] - 1] |= (TIM_CR1_CEN);
 
-  // reset output params
-  output_type[axis] = 0;
+  // set the params
+  output_type[axis] = 0; // set output type
+  axes[axis].freq = 0; // set axis output frequency
+  // TODO - calculate axis pos using DIR state
+  axes[axis].pos = pos_last[axis] + steps_last[axis]; // set axis position
 }
