@@ -45,18 +45,20 @@ struct AXIS_t
   int32_t             pos;        // actual position, steps
   uint32_t            freq;       // actual frequency, Hz
   int32_t             accel;      // actual acceleration, Hz/s
+  uint32_t            min_freq;   // min frequency, Hz
+  uint32_t            min_accel;  // min acceleration, Hz/s
   uint32_t            max_freq;   // max frequency, Hz
   uint32_t            max_accel;  // max acceleration, Hz/s
 };
 // axis data array
 static struct AXIS_t axes[] = {
-  {&htim1, &hdma_tim1_ch1, 0, 0, 0, 1000000, 1000000},
+  {&htim1,  &hdma_tim1_ch1,      0, 0, 0, 10, 10, 1000000, 1000000},
 #if GEN_AXIS_CNT >= 2
-  {&htim2, &hdma_tim2_ch1, 0, 0, 0, 1000000, 1000000},
+  {&htim2,  &hdma_tim2_ch1,      0, 0, 0, 10, 10, 1000000, 1000000},
 #if GEN_AXIS_CNT >= 3
-  {&htim3, &hdma_tim3_ch1_trig, 0, 0, 0, 1000000, 1000000},
+  {&htim3,  &hdma_tim3_ch1_trig, 0, 0, 0, 10, 10, 1000000, 1000000},
 #if GEN_AXIS_CNT >= 4
-  {&htim4, &hdma_tim4_ch1, 0, 0, 0, 1000000, 1000000}
+  {&htim4,  &hdma_tim4_ch1,      0, 0, 0, 10, 10, 1000000, 1000000}
 #endif
 #endif
 #endif
