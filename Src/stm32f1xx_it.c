@@ -37,6 +37,7 @@
 
 /* USER CODE BEGIN 0 */
 #include "generator.h"
+#include "test1.h"
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -62,6 +63,9 @@ void SysTick_Handler(void)
 
   // use own handler for the systick update event
   GEN_SYSTICK_IRQHandler();
+
+  // test1 systick IRQ handler
+  TEST1_SYSTICK_IRQHandler();
 
 #if 0
   /* USER CODE END SysTick_IRQn 0 */
