@@ -30,7 +30,7 @@
 #define GEN_STEPS_OUTPUT_ACCEL_LINEAR   2
 #define GEN_STEPS_OUTPUT_ACCEL_S        4
 #define GEN_DIR_OUTPUT                  128
-#define GEN_SYSTICK_IRQ_FREQ            1000 // Hz
+#define GEN_SYSTICK_IRQ_FREQ            10000 // Hz
 
 
 
