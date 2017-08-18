@@ -219,6 +219,10 @@ void GEN_steps_output
   }
 
 
+  // TODO - set frequency recalculation data for the SYSTICK handler
+
+  // TODO - set timer's data
+
 
 #if 0
   // calculate the period and prescaler
