@@ -19,6 +19,8 @@
 
 /* Global vars ---------------------------------------------------------------*/
 
+#define TEST_1_ENABLED 1
+
 // array uses by axis DMA channels
 static uint8_t DMA_array[GEN_AXIS_CNT][GEN_DMA_ARRAY_SIZE] = {{0}};
 
@@ -147,12 +149,25 @@ void GEN_steps_output(uint8_t axis, uint16_t steps, uint32_t freq)
  */
 void GEN_SYSTICK_IRQHandler(void)
 {
+#if TEST_1_ENABLED
+#define CNT 8
   static uint8_t axis = 0;
+  static uint32_t freq[CNT] = {10,100,1000,10000,100000,200000,200000,500000};
+  static int8_t freq_n = 0;
 
-  // do it for all axes
-  for ( axis = GEN_AXIS_CNT; axis--; )
+  // do it every second
+  if ( freq_n < CNT && !(HAL_GetTick() % GEN_SYSTICK_IRQ_FREQ) )
   {
+    // do it for all axes
+    for ( axis = GEN_AXIS_CNT; axis--; )
+    {
+      GEN_steps_output(axis, 10, freq[freq_n]);
+    }
+
+    ++freq_n;
   }
+#undef CNT
+#endif
 }
 
 /*
