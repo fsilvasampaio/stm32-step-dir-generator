@@ -35,10 +35,10 @@ extern DMA_HandleTypeDef hdma_tim4_ch1;
 // axis data array
 static struct AXIS_t axes[GEN_AXIS_CNT] =
 {
-  {&htim1,  &hdma_tim1_ch1,      72000000},
-  {&htim2,  &hdma_tim2_ch1,      72000000},
-  {&htim3,  &hdma_tim3_ch1_trig, 72000000},
-  {&htim4,  &hdma_tim4_ch1,      72000000}
+  {&htim1,  &hdma_tim1_ch1,      72000000,0,0,0,0},
+  {&htim2,  &hdma_tim2_ch1,      72000000,0,0,0,0},
+  {&htim3,  &hdma_tim3_ch1_trig, 72000000,0,0,0,0},
+  {&htim4,  &hdma_tim4_ch1,      72000000,0,0,0,0}
 };
 
 
@@ -88,22 +88,26 @@ void GEN_init(void)
  */
 void GEN_steps_output(uint8_t axis, uint16_t steps, uint32_t freq)
 {
-  static uint32_t prescaler = 0;
-  static uint32_t period = 0;
-
   // save last generation steps value
-  axes[axis].steps_last = steps;
+  axes[axis].steps = steps;
 
-  // calculate the period and prescaler
-  prescaler = axes[axis].tim_freq / freq / 65536;
-  period = axes[axis].tim_freq / freq / (prescaler + 1);
+  // change prescaler/period only when new frequency is different
+  if ( freq != axes[axis].freq )
+  {
+    // save last generation frequency value
+    axes[axis].freq = freq;
 
-  // set timer's data
-  __HAL_TIM_SET_AUTORELOAD(axes[axis].htim, period - 1);
-  __HAL_TIM_SET_COMPARE(axes[axis].htim, TIM_CHANNEL_1, period/2 - 1);
-  __HAL_TIM_SET_PRESCALER(axes[axis].htim, prescaler);
-  // generate the Update event to apply the new prescaler
-  axes[axis].htim->Instance->EGR |= (TIM_EGR_UG);
+    // calculate the period and prescaler
+    axes[axis].presc = axes[axis].tim_freq / freq / 65536;
+    axes[axis].period = axes[axis].tim_freq / freq / (axes[axis].presc + 1);
+
+    // set timer's data
+    __HAL_TIM_SET_AUTORELOAD(axes[axis].htim, axes[axis].period - 1);
+    __HAL_TIM_SET_COMPARE(axes[axis].htim, TIM_CHANNEL_1, axes[axis].period/2 - 1);
+    __HAL_TIM_SET_PRESCALER(axes[axis].htim, axes[axis].presc);
+    // generate the Update event to apply the new prescaler
+    axes[axis].htim->Instance->EGR |= (TIM_EGR_UG);
+  }
 
   // reset the CR1 timer enable bit in the DMA array cell
   // this uses to stop timer immidiately after DMA transfer complete
@@ -166,5 +170,5 @@ void GEN_DMA_transfer_complete(uint8_t axis)
   __HAL_TIM_MOE_DISABLE(axes[axis].htim);
 
   // set the CR1 timer enable bit in the DMA array cell
-  DMA_array[axis][axes[axis].steps_last - 1] |= (TIM_CR1_CEN);
+  DMA_array[axis][axes[axis].steps - 1] |= (TIM_CR1_CEN);
 }

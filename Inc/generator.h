@@ -33,7 +33,10 @@ struct AXIS_t
   TIM_HandleTypeDef*  htim; // link to timer's init structure
   DMA_HandleTypeDef*  hdma; // link to timer's dma channel init structure
   uint32_t            tim_freq; // axis timer base frequency, Hz
-  uint16_t            steps_last;
+  uint32_t            presc;
+  uint32_t            period;
+  uint16_t            steps;
+  uint16_t            freq;
 };
 
 
