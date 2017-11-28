@@ -2,6 +2,10 @@
 Debug/
 Release/
 
+# CubeMX project files
+mx.scratch
+.mxproject
+
 # IDE folders
 .settings/
 
@@ -84,4 +88,3 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-Info/performance_tests.txt
